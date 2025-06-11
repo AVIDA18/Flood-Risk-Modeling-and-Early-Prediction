@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Flood Prediction (Bagmati River)</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --danger: #ef233c;
+            --success: #2ecc71;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px;
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 28px;
+        }
+
+        .form-header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        select,
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background-color: var(--light);
+        }
+
+        select:focus,
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .input-item {
+            display: flex;
+            flex-direction: column;
+            margin-right: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 25px;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .result {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .high-risk {
+            color: white;
+            background-color: var(--danger);
+            animation: pulse 1.5s infinite;
+        }
+
+        .low-risk {
+            color: white;
+            background-color: var(--success);
+        }
+
+        .medium-risk {
+            color: white;
+            background-color: rgba(255, 77, 0, 0.785);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .input-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>Bagmati River</h1>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-header">
+                <div class="form-group">
+                    <label for="id_model_option">Select Prediction Model</label>
+                    <select id="id_model_option" name="model_option">
+                        <option value="option1" {% if selected_model == "option1" %}selected{% endif %}>Downstream Gauge Height Prediction</option>
+                        <option value="option2" {% if selected_model == "option2" %}selected{% endif %}>Forecast River Gauge Height For Next Day</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="option1-fields" style="display:none;">
+                <div class="input-grid">
+                    <div class="input-item">
+                        <label for="id_KhokanaRiver">Khokana River Discharge(m3/s)</label>
+                        {{ form.KhokanaRiver }}
+                    </div>
+
+                    <div class="input-item">
+                        <label for="id_SundarijalGHT">Sundarijal GHT(meters)</label>
+                        {{ form.SundarijalGHT }}
+                    </div>
+
+                    <div class="input-item">
+                        <label for="id_SundarijalRiver">Sundarijal River Discharge(m3/s)</label>
+                        {{ form.SundarijalRiver }}
+                    </div>
+
+                    <div class="input-item">
+                        <label for="id_Rain_Kumaltar">Rain Kumaltar(mm)</label>
+                        {{ form.Rain_Kumaltar }}
+                    </div>
+
+                    <div class="input-item">
+                        <label for="id_Rain_Kritipur">Rain Kritipur(mm)</label>
+                        {{ form.Rain_Kritipur }}
+                    </div>
+
+                    <div class="input-item">
+                        <label for="id_Rain_Sankhu">Rain Sankhu(mm)</label>
+                        {{ form.Rain_Sankhu }}
+                    </div>
+
+                    <div class="input-item">
+                        <label for="id_Rain_Chagu">Rain Chagu(mm)</label>
+                        {{ form.Rain_Chagu }}
+                    </div>
+
+                    <div class="input-item">
+                        <label for="id_Rain_DhapDam">Rain Dhap Dam(mm)</label>
+                        {{ form.Rain_DhapDam }}
+                    </div>
+
+                    <div class="input-item">
+                        <label for="id_Rain_Airport">Rain Airport(mm)</label>
+                        {{ form.Rain_Airport }}
+                    </div>
+                </div>
+            </div>
+
+            <div id="option2-fields" style="display:none;">
+                <div class="input-item">
+                    <label for="id_input_file">Upload CSV File</label>
+                    {{ form.input_file }}
+                </div>
+            </div>
+
+            <button type="submit">Predict Risk</button>
+        </form>
+
+        {% if predicted_value is not None %}
+        {% if flood_status == 'Danger' %}
+        <div class="result high-risk">
+            🔴 Danger: Severe Flood Risk Will Occur! Take Immediate Action.<br>
+            ⚠️ Severe Flood Risk is expected with the river projected to reach a gauge height of {{ predicted_value }}
+            meters.
+            Immediate action will be necessary.
+        </div>
+        {% elif flood_status == 'Warning' %}
+        <div class="result medium-risk">
+            🟠 Warning: Moderate Flood Risk Expected. Stay Alert and Monitor Conditions.<br>
+            ⚠️ Moderate Flood Risk is expected with the river projected to reach a gauge height of {{ predicted_value
+            }} meters. Stay alert and monitor conditions.
+        </div>
+        {% else %}
+        <div class="result low-risk">
+            🟢 No Flood Risk Expected: Conditions Will Remain Normal.<br>
+            ✅ No Flood Risk is expected, with the river projected to remain at a gauge height of {{ predicted_value }}
+            meters.
+            Conditions will remain normal.
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleFields() {
+            const selected = document.getElementById('id_model_option').value;
+            const option1Fields = document.getElementById('option1-fields');
+            const option2Fields = document.getElementById('option2-fields');
+
+            if (selected === 'option1') {
+                option1Fields.style.display = 'block';
+                option2Fields.style.display = 'none';
+            } else if (selected === 'option2') {
+                option1Fields.style.display = 'none';
+                option2Fields.style.display = 'block';
+            } else {
+                option1Fields.style.display = 'none';
+                option2Fields.style.display = 'none';
+            }
+        }
+
+        // Run on page load to set initial visibility
+        document.addEventListener('DOMContentLoaded', toggleFields);
+
+        // Run every time dropdown changes
+        document.getElementById('id_model_option').addEventListener('change', toggleFields);
+    </script>
+</body>
+
+</html>
