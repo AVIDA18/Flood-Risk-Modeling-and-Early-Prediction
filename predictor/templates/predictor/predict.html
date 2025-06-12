@@ -185,7 +185,7 @@
                     <label for="id_model_option">Select Prediction Model</label>
                     <select id="id_model_option" name="model_option">
                         <option value="option1" {% if selected_model == "option1" %}selected{% endif %}>Downstream Gauge Height Prediction</option>
-                        <option value="option2" {% if selected_model == "option2" %}selected{% endif %}>Forecast River Gauge Height For Next Day</option>
+                        {% comment %} <option value="option2" {% if selected_model == "option2" %}selected{% endif %}>Forecast River Gauge Height For Next Day</option> {% endcomment %}
                     </select>
                 </div>
             </div>
