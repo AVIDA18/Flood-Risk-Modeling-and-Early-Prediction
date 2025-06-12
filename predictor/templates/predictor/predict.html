@@ -180,17 +180,7 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <div class="form-header">
-                <div class="form-group">
-                    <label for="id_model_option">Select Prediction Model</label>
-                    <select id="id_model_option" name="model_option">
-                        <option value="option1" {% if selected_model == "option1" %}selected{% endif %}>Downstream Gauge Height Prediction</option>
-                        {% comment %} <option value="option2" {% if selected_model == "option2" %}selected{% endif %}>Forecast River Gauge Height For Next Day</option> {% endcomment %}
-                    </select>
-                </div>
-            </div>
-
-            <div id="option1-fields" style="display:none;">
+            <div id="option1-fields">
                 <div class="input-grid">
                     <div class="input-item">
                         <label for="id_KhokanaRiver">Khokana River Discharge(m3/s)</label>
@@ -238,14 +228,6 @@
                     </div>
                 </div>
             </div>
-
-            <div id="option2-fields" style="display:none;">
-                <div class="input-item">
-                    <label for="id_input_file">Upload CSV File</label>
-                    {{ form.input_file }}
-                </div>
-            </div>
-
             <button type="submit">Predict Risk</button>
         </form>
 
@@ -273,31 +255,6 @@
         {% endif %}
         {% endif %}
     </div>
-
-    <script>
-        function toggleFields() {
-            const selected = document.getElementById('id_model_option').value;
-            const option1Fields = document.getElementById('option1-fields');
-            const option2Fields = document.getElementById('option2-fields');
-
-            if (selected === 'option1') {
-                option1Fields.style.display = 'block';
-                option2Fields.style.display = 'none';
-            } else if (selected === 'option2') {
-                option1Fields.style.display = 'none';
-                option2Fields.style.display = 'block';
-            } else {
-                option1Fields.style.display = 'none';
-                option2Fields.style.display = 'none';
-            }
-        }
-
-        // Run on page load to set initial visibility
-        document.addEventListener('DOMContentLoaded', toggleFields);
-
-        // Run every time dropdown changes
-        document.getElementById('id_model_option').addEventListener('change', toggleFields);
-    </script>
 </body>
 
 </html>
